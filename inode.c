@@ -186,6 +186,10 @@ static int __file_lookup(struct inode *dir,
                     *fi = _fi;
                     return 0;
                 }
+
+                if (unlikely(!dblock->files[_fi].nr_blk))
+                    return -EUCLEAN;
+
                 _fi += dblock->files[_fi].nr_blk;
             }
             RELEASE_BUFFER_HEAD(*ret_bi_bh);
