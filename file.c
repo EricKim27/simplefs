@@ -582,5 +582,9 @@ const struct file_operations simplefs_file_ops = {
     .read = simplefs_read,
     .write = simplefs_write,
     .llseek = generic_file_llseek,
+#if SIMPLEFS_AT_LEAST(7, 1, 0)
+    .fsync = simple_fsync,
+#else
     .fsync = generic_file_fsync,
+#endif
 };
