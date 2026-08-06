@@ -108,7 +108,7 @@ static int simplefs_write_inode(struct inode *inode,
     disk_inode->i_blocks = inode->i_blocks;
     disk_inode->i_nlink = inode->i_nlink;
     disk_inode->ei_block = ci->ei_block;
-    strncpy(disk_inode->i_data, ci->i_data, sizeof(ci->i_data));
+    strscpy(disk_inode->i_data, ci->i_data, sizeof(ci->i_data));
 
     mark_buffer_dirty(bh);
     sync_dirty_buffer(bh);
