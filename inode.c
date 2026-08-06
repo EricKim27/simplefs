@@ -111,7 +111,7 @@ struct inode *simplefs_iget(struct super_block *sb, unsigned long ino)
         inode->i_fop = &simplefs_file_ops;
         inode->i_mapping->a_ops = &simplefs_aops;
     } else if (S_ISLNK(inode->i_mode)) {
-        strncpy(ci->i_data, cinode->i_data, sizeof(ci->i_data));
+        strscpy(ci->i_data, cinode->i_data, sizeof(ci->i_data));
         inode->i_link = ci->i_data;
         inode->i_op = &symlink_inode_ops;
     }
@@ -448,18 +448,15 @@ static void simplefs_set_file_into_dir(struct simplefs_dir_block *dblock,
         }
         dblock->files[fi + 1].inode = inode_no;
         dblock->files[fi + 1].nr_blk = dblock->files[fi].nr_blk - 1;
-        strncpy(dblock->files[fi + 1].filename, name,
-                SIMPLEFS_FILENAME_LEN - 1);
-        dblock->files[fi + 1].filename[SIMPLEFS_FILENAME_LEN - 1] = '\0';
+        strscpy_pad(dblock->files[fi + 1].filename, name,
+                    SIMPLEFS_FILENAME_LEN);
         dblock->files[fi].nr_blk = 1;
     } else if (dblock->nr_files == 0) {
         dblock->files[0].inode = inode_no;
-        strncpy(dblock->files[0].filename, name, SIMPLEFS_FILENAME_LEN - 1);
-        dblock->files[0].filename[SIMPLEFS_FILENAME_LEN - 1] = '\0';
+        strscpy(dblock->files[0].filename, name, SIMPLEFS_FILENAME_LEN);
     } else {
         dblock->files[0].inode = inode_no;
-        strncpy(dblock->files[0].filename, name, SIMPLEFS_FILENAME_LEN - 1);
-        dblock->files[0].filename[SIMPLEFS_FILENAME_LEN - 1] = '\0';
+        strscpy_pad(dblock->files[0].filename, name, SIMPLEFS_FILENAME_LEN);
     }
     dblock->nr_files++;
 }
@@ -932,9 +929,8 @@ static int simplefs_rename(struct inode *src_dir,
 
         dblock = (struct simplefs_dir_block *) src_bi_bh->b_data;
 
-        strncpy(dblock->files[fi].filename, dest_dentry->d_name.name,
-                SIMPLEFS_FILENAME_LEN - 1);
-        dblock->files[fi].filename[SIMPLEFS_FILENAME_LEN - 1] = '\0';
+        strscpy_pad(dblock->files[fi].filename, dest_dentry->d_name.name,
+                    SIMPLEFS_FILENAME_LEN);
         mark_buffer_dirty(src_bi_bh);
 
         RELEASE_BUFFER_HEAD(src_bi_bh);
